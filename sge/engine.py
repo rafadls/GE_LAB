@@ -64,6 +64,8 @@ def make_initial_population():
 
 def evaluate(ind, eval_func, OPTIMIZE=False):
     phen, tree_depth, other_info, quality = None, None, None, np.inf
+    print('EVALUATE')
+    print(ind)
     if ind['fitness'] is None:
         if params['ALGORITHM']=='SGE':
             mapping_values = [0 for i in ind['genotype']]
@@ -95,6 +97,7 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
         ind['phenotype'] = phen
         ind['fitness'] = quality
         ind['other_info'] = other_info
+    print()
 
 
 def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
@@ -139,15 +142,16 @@ def Get_phenotype(phenotype, fitness_function, OPTIMIZE):
 
     if n_constants>0:
         if OPTIMIZE:
-            fun = lambda x: eval_ind(x)
-            res = minimize(fun, np.ones(n_constants), method='SLSQP',options  = {"maxiter":10, "disp":True},callback = minimize_stopper.__call__)
-            opt_const = res['jac']
+            try:
+                fun = lambda x: eval_ind(x)
+                res = minimize(fun, np.ones(n_constants), method='SLSQP',jac=False)
+                opt_const = res['x']
+            except:
+                opt_const = np.random.rand(n_constants)
         else:
             opt_const = np.random.rand(n_constants)
         for index in range(n_constants):
             replace_phenotype = replace_phenotype.replace('c[' + str(index) + ']', str(opt_const[index]))
-        if OPTIMIZE:
-            print(replace_phenotype)
     return replace_phenotype
 
 
@@ -177,6 +181,7 @@ def evolutionary_algorithm(evaluation_function=None, parameters_file=None):
     best_overall = {}
     flag = False
     while it <= params['GENERATIONS']:
+        print('########### Generation ' + str(it) + ' ########')
         for i in tqdm(population):
             if params['OPTIMIZE'] and it%params['OPTIMIZE_EACH'] == 0 and it!=0:
                 evaluate(i, evaluation_function,OPTIMIZE=True)

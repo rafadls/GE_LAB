@@ -31,7 +31,7 @@ params = {'PARAMETERS': None,
           'MAX_WRAPS': 0,
           'MIN_INIT_TREE_DEPTH': None,
           'OPTIMIZE': True,
-          'OPTIMIZE_EACH': 10,
+          'OPTIMIZE_EACH': 1,
           }
 
 

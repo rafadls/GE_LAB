@@ -1,4 +1,4 @@
-<start> ::= <expr>
+<start> ::= <expr> * (x[9]**Constant) * (x[10]**Constant)
 <expr> ::= <expr><op><expr>|(<expr><op><expr>)|<pre_op>(<expr>)|<value>
 <op> ::= +|-|*|\eb_div_\eb|**
 <pre_op> ::= sin|cos|_exp_|_log_|_inv_

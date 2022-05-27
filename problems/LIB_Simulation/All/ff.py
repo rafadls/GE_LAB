@@ -4,6 +4,8 @@ from sge.utilities.protected_math import _log_, _div_, _exp_, _inv_, _sqrt_, pro
 from sge.engine import setup
 import sge
 import argparse
+import pandas as pd
+import numpy as np
 
 def drange(start, stop, step):
     r = start
@@ -20,7 +22,7 @@ class SymbolicRegression():
         self.__invalid_fitness = invalid_fitness
         self.partition_rng = random.Random()
         self.has_test_set = has_test_set
-        self.readpolynomial()
+        self.read_fit_cases()
         self.calculate_rrse_denominators()
         
     def calculate_rrse_denominators(self):
@@ -35,35 +37,8 @@ class SymbolicRegression():
             self.__RRSE_test_denominator = sum([(i - test_output_mean)**2 for i in test_outputs])
 
     def read_fit_cases(self):
-        f_in = open(self.__file_problem,'r')
-        data = f_in.readlines()
-        f_in.close()
-        fit_cases_str = [ case[:-1].split() for case in data[1:]]
-        self.__train_set = [[float(elem) for elem in case] for case in fit_cases_str]
+        self.__train_set = pd.read_csv('resources/LIB_Simulation/All/df_ff.txt').sample(n=1000).values
         self.__number_of_variables = len(self.__train_set[0]) - 1
-
-    def readpolynomial(self):
-        def Koza_1(inp):
-            return pow(inp,4) + pow(inp,3) + pow(inp,2) + inp
-
-        function = eval(Koza_1)
-        # two variables
-        l = []
-        for xx in drange(-5,5.4,0.4):
-            for yy in drange(-5,5.4,0.4):
-                function = eval(self.function)
-                zz = map(function, xx, yy)
-                l.append([xx,yy,zz])
-
-        self.__train_set=l
-        self.training_set_size = len(self.__train_set)
-        if self.has_test_set:
-            xx = list(drange(-5,5.0,.1))
-            yy = list(drange(-5,5.0,.1))
-            function = eval(self.function)
-            zz = map(function, xx, yy)
-            self.__test_set = [xx,yy,zz]
-            self.test_set_size = len(self.__test_set)
 
     def get_error(self, individual, dataset):
         pred_error = 0
@@ -72,8 +47,14 @@ class SymbolicRegression():
             try:
                 result = eval(individual, globals(), {"x": fit_case[:-1]})
                 pred_error += (case_output - result)**2
-            except (OverflowError, ValueError) as e:
+            except:
                 return self.__invalid_fitness
+        if np.isnan(pred_error):
+            print('None')
+            return self.__invalid_fitness
+        if pred_error == 'nan':
+            print('nan')
+            return self.__invalid_fitness
         return pred_error
 
     def evaluate(self, individual):

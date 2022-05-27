@@ -24,25 +24,8 @@ import re
 from scipy.optimize import minimize
 from multiprocessing import Process, Queue
 import time
-from numpy import nan
 
-import warnings
-
-class TookTooLong(Warning):
-    pass
-
-class MinimizeStopper(object):
-    def __init__(self, max_sec=20):
-        self.max_sec = max_sec
-        self.start = time.time()
-    def __call__(self, xk=None):
-        elapsed = time.time() - self.start
-        if elapsed > self.max_sec:
-            warnings.warn("Terminating optimization: time limit reached",
-                          TookTooLong)
-        else:
-            # you might want to report other stuff here
-            print("Elapsed: %.3f sec" % elapsed)
+from sge.utilities.stats.trackers import cache
 
 
 def generate_random_individual():
@@ -56,16 +39,12 @@ def generate_random_individual():
         genotype = [np.random.uniform() for _ in range(params['SIZE_GENOTYPE'])]
     return {'genotype': genotype, 'fitness': None, 'tree_depth' : tree_depth}
 
-
 def make_initial_population():
     for i in range(params['POPSIZE']):
         yield generate_random_individual()
 
-
 def evaluate(ind, eval_func, OPTIMIZE=False):
     phen, tree_depth, other_info, quality = None, None, None, np.inf
-    print('EVALUATE')
-    print(ind)
     if ind['fitness'] is None:
         if params['ALGORITHM']=='SGE':
             mapping_values = [0 for i in ind['genotype']]
@@ -76,29 +55,39 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
         elif params['ALGORITHM']=='PGE':
             ind['original_phenotype'], ind['gram_counter'] = mapper_PGE(ind['genotype'])
         phen = Get_phtnotype_time(ind['original_phenotype'],eval_func, OPTIMIZE)
-        try:
-            quality, other_info = eval_func.evaluate(phen)
-        except:
-            pass
-        if quality == None:
+        if phen in cache.keys():
             quality = np.inf
+        else:
+            try:
+                quality, other_info = eval_func.evaluate(phen)
+            except:
+                pass
+            if quality == None:
+                quality = np.inf
+            if params['CACHE']:
+                cache[phen] = quality
         ind['phenotype'] = phen
         ind['fitness'] = quality
         ind['other_info'] = other_info
         ind['tree_depth'] = tree_depth
-    elif (not 'phenotype' in ind.keys()) or OPTIMIZE:        
+        ind['optimized'] = OPTIMIZE
+    elif (not ind['optimized']) and OPTIMIZE:     
         phen = Get_phtnotype_time(ind['original_phenotype'],eval_func, OPTIMIZE)
-        try:
-            quality, other_info = eval_func.evaluate(phen)
-        except:
-            pass
-        if quality == None:
+        if phen in cache.keys():
             quality = np.inf
+        else:
+            try:
+                quality, other_info = eval_func.evaluate(phen)
+            except:
+                pass
+            if quality == None:
+                quality = np.inf
+            if params['CACHE']:
+                cache[phen] = quality
         ind['phenotype'] = phen
         ind['fitness'] = quality
         ind['other_info'] = other_info
-    print()
-
+        ind['optimized'] = OPTIMIZE
 
 def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
     def f(phenotype, fitness_function, OPTIMIZE, queue):
@@ -124,9 +113,7 @@ def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
         result = q.get()
     return result
 
-
 def Get_phenotype(phenotype, fitness_function, OPTIMIZE):
-    minimize_stopper = MinimizeStopper()
     p = r"Constant"
     n_constants = len(re.findall(p, phenotype))
 
@@ -154,7 +141,6 @@ def Get_phenotype(phenotype, fitness_function, OPTIMIZE):
             replace_phenotype = replace_phenotype.replace('c[' + str(index) + ']', str(opt_const[index]))
     return replace_phenotype
 
-
 def setup(parameters_file_path = None):
     if parameters_file_path is not None:
         load_parameters(file_name=parameters_file_path)
@@ -181,7 +167,9 @@ def evolutionary_algorithm(evaluation_function=None, parameters_file=None):
     best_overall = {}
     flag = False
     while it <= params['GENERATIONS']:
-        print('########### Generation ' + str(it) + ' ########')
+        #print('########### Generation ' + str(it) + ' ########')
+        if it%params['CLEAN_CACHE_EACH']==0 and it!=0:
+            cache = {}
         for i in tqdm(population):
             if params['OPTIMIZE'] and it%params['OPTIMIZE_EACH'] == 0 and it!=0:
                 evaluate(i, evaluation_function,OPTIMIZE=True)
@@ -216,6 +204,5 @@ def evolutionary_algorithm(evaluation_function=None, parameters_file=None):
             best_generation = copy.deepcopy(new_population[0])
             if params['ADAPTIVE']:
                 params['LEARNING_FACTOR'] += params['ADAPTIVE_INCREMENT']
-
         it += 1
 

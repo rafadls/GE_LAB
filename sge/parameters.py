@@ -32,6 +32,10 @@ params = {'PARAMETERS': None,
           'MIN_INIT_TREE_DEPTH': None,
           'OPTIMIZE': True,
           'OPTIMIZE_EACH': 1,
+          'EASY_START': True,
+          'ALL_VALID': True, 
+          'CACHE': True,  
+          'CLEAN_CACHE_EACH': 10,      
           }
 
 

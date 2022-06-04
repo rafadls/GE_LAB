@@ -96,7 +96,7 @@ def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
 
     q = Queue()
     p = Process(target=f, args=(phenotype, fitness_function, OPTIMIZE, q))
-    max_time = 30
+    max_time = 60
     t0 = time.time()
 
     p.start()

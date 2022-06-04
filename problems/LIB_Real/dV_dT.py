@@ -5,7 +5,6 @@ from sge.engine import setup
 import sge
 import argparse
 import pandas as pd
-import numpy as np
 
 def drange(start, stop, step):
     r = start
@@ -37,7 +36,7 @@ class SymbolicRegression():
             self.__RRSE_test_denominator = sum([(i - test_output_mean)**2 for i in test_outputs])
 
     def read_fit_cases(self):
-        self.__train_set = pd.read_csv('resources/df_Rout.csv').sample(n=1000).values
+        self.__train_set = pd.read_csv('resources/LIB_Real/df_dV_dT.csv').sample(n=10000).values
         self.__number_of_variables = len(self.__train_set[0]) - 1
 
     def get_error(self, individual, dataset):
@@ -45,20 +44,10 @@ class SymbolicRegression():
         for fit_case in dataset:
             case_output = fit_case[-1]
             try:
-                #print()
-                #print(individual)
                 result = eval(individual, globals(), {"x": fit_case[:-1]})
                 pred_error += (case_output - result)**2
-                #print(pred_error)
-                #print()
-            except:
+            except (OverflowError, ValueError) as e:
                 return self.__invalid_fitness
-        if np.isnan(pred_error):
-            print('None')
-            return self.__invalid_fitness
-        if pred_error == 'nan':
-            print('nan')
-            return self.__invalid_fitness
         return pred_error
 
     def evaluate(self, individual):

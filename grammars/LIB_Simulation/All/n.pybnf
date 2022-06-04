@@ -1,6 +1,9 @@
-<start> ::= <expr> * (x[9]**Constant) * (x[10]**Constant)
-<expr> ::= <expr><op><expr>|(<expr><op><expr>)|<pre_op>(<expr>)|<value>
-<op> ::= +|-|*|\eb_div_\eb|**
+<start> ::= <expr1> * (x[9]**Constant) * (x[10]**Constant)
+<expr1> ::= <expr2><op><expr2>|(<expr2><op><expr2>)|<value>
+<expr2> ::= <expr3><op><expr3>|(<expr3><op><expr3>)|<value>
+<expr3> ::= <expr4><op><expr4>|(<expr4><op><expr4>)|<value>
+<expr4> ::= <value><op><value>|(<value><op><value>)|<value>
+<op> ::= +|-|*|/|**
 <pre_op> ::= sin|cos|_exp_|_log_|_inv_
 <value> ::= <variable> | Constant
 <variable> ::= x[0] | x[1] | x[2] | x[3] | x[4] | x[5] | x[6] | x[7] | x[8] | x[9] | x[10] | x[11]

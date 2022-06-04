@@ -37,7 +37,7 @@ class SymbolicRegression():
             self.__RRSE_test_denominator = sum([(i - test_output_mean)**2 for i in test_outputs])
 
     def read_fit_cases(self):
-        self.__train_set = pd.read_csv('resources/LIB_Simulation/All/df_cdrag.txt').sample(n=1000).values
+        self.__train_set = pd.read_csv('resources/LIB_Simulation/All/df_cdrag.txt').sample(n=2000).values
         self.__number_of_variables = len(self.__train_set[0]) - 1
 
     def get_error(self, individual, dataset):

@@ -1,0 +1,9 @@
+<start> ::= <expr1>
+<expr1> ::= <expr2><op><expr2>|(<expr2><op><expr2>)| <pre_op>(<expr2>) |<value>
+<expr2> ::= <expr3><op><expr3>|(<expr3><op><expr3>)| <pre_op>(<expr3>) |<value>
+<expr3> ::= <expr4><op><expr4>|(<expr4><op><expr4>)| <pre_op>(<expr4>) |<value>
+<expr4> ::= <value><op><value>|(<value><op><value>)| <pre_op>(<value>) |<value>
+<op> ::= +|-|*|/|**
+<pre_op> ::= sin|cos|_exp_|_log_|_inv_
+<value> ::= <variable> | Constant
+<variable> ::= x[0] | x[1] | x[2] | x[3] | x[4] | x[5]

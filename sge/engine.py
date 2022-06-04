@@ -1,6 +1,7 @@
 import random
 import sys
 import numpy as np
+import pandas as pd
 import sge.grammar_sge as grammar_sge
 import sge.grammar_pge as grammar_pge
 import sge.grammar_ge as grammar_ge
@@ -45,7 +46,7 @@ def make_initial_population():
 
 def evaluate(ind, eval_func, OPTIMIZE=False):
     phen, tree_depth, other_info, quality = None, None, None, np.inf
-    if ind['fitness'] is None:
+    if pd.isna(ind['fitness']):
         if params['ALGORITHM']=='SGE':
             mapping_values = [0 for i in ind['genotype']]
             ind['original_phenotype'], tree_depth = grammar_sge.mapping(ind['genotype'], mapping_values)
@@ -62,7 +63,7 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
                 quality, other_info = eval_func.evaluate(phen)
             except:
                 pass
-            if quality == None:
+            if pd.isna(quality):
                 quality = np.inf
             if params['CACHE']:
                 cache[phen] = quality
@@ -88,6 +89,7 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
         ind['fitness'] = quality
         ind['other_info'] = other_info
         ind['optimized'] = OPTIMIZE
+    return ind
 
 def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
     def f(phenotype, fitness_function, OPTIMIZE, queue):
@@ -170,11 +172,15 @@ def evolutionary_algorithm(evaluation_function=None, parameters_file=None):
         #print('########### Generation ' + str(it) + ' ########')
         if it%params['CLEAN_CACHE_EACH']==0 and it!=0:
             cache = {}
-        for i in tqdm(population):
+        for i in range(len((population))):
             if params['OPTIMIZE'] and it%params['OPTIMIZE_EACH'] == 0 and it!=0:
-                evaluate(i, evaluation_function,OPTIMIZE=True)
+                population[i] = evaluate(population[i], evaluation_function,OPTIMIZE=True)
             else:
-                evaluate(i, evaluation_function,OPTIMIZE=False)
+                population[i] = evaluate(population[i], evaluation_function,OPTIMIZE=False)
+            while (pd.isna(population[i]['fitness'])) or population[i]['fitness']>10**6:
+                population[i] = generate_random_individual()
+                population[i] = evaluate(population[i], evaluation_function,OPTIMIZE=False)
+
         population.sort(key=lambda x: x['fitness'])
 
         if params['ALGORITHM']=='PGE':

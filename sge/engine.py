@@ -1,5 +1,6 @@
 import random
 import sys
+from token import OP
 import numpy as np
 import pandas as pd
 import sge.grammar_sge as grammar_sge
@@ -98,7 +99,7 @@ def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
 
     q = Queue()
     p = Process(target=f, args=(phenotype, fitness_function, OPTIMIZE, q))
-    max_time = 60
+    max_time = 30
     t0 = time.time()
 
     p.start()

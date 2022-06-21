@@ -13,19 +13,33 @@ python -m <problem module> --experiment_name=<name output folder> --parameters=<
 ```
 ## **Li-Ion Battery: equilibrium**
 ### **Drag coefficient**
-
+### Normal
 ```bash
 python -m problems.LIB_Simulation.All.cdrag --experiment_name='results/cdrag' --parameters='parameters/LIB_Simulation/All/cdrag.yml' --algorithm='SGE'
 ```
-### **Friction factor**
+### Simple
+```bash
+python -m problems.LIB_Simulation.All_simple.cdrag --experiment_name='results/cdrag' --parameters='parameters/LIB_Simulation/All_simple/cdrag.yml' --algorithm='SGE'
+```
 
+### **Friction factor**
+### Normal
 ```bash
 python -m problems.LIB_Simulation.All.ff --experiment_name='results/ff' --parameters='parameters/LIB_Simulation/All/ff.yml' --algorithm='SGE'
 ```
-### **Nusselt number**
+### Simple
+```bash
+python -m problems.LIB_Simulation.All_simple.ff --experiment_name='results/ff' --parameters='parameters/LIB_Simulation/All_simple/ff.yml' --algorithm='SGE'
+```
 
+### **Nusselt number**
+### Normal
 ```bash
 python -m problems.LIB_Simulation.All.n --experiment_name='results/n' --parameters='parameters/LIB_Simulation/All/n.yml' --algorithm='SGE'
+```
+### Simple
+```bash
+python -m problems.LIB_Simulation.All_simple.n --experiment_name='results/n_simple' --parameters='parameters/LIB_Simulation/All_simple/n.yml' --algorithm='SGE'
 ```
 
 ## **Li-Ion Battery: Discharge and cooling down**

@@ -19,7 +19,7 @@ python -m problems.LIB_Simulation.All.cdrag --experiment_name='results/cdrag' --
 ```
 ### Simple
 ```bash
-python -m problems.LIB_Simulation.All_simple.cdrag --experiment_name='results/cdrag' --parameters='parameters/LIB_Simulation/All_simple/cdrag.yml' --algorithm='SGE'
+python -m problems.LIB_Simulation.All_simple.cdrag --experiment_name='results/cdrag_simple' --parameters='parameters/LIB_Simulation/All_simple/cdrag.yml' --algorithm='SGE'
 ```
 
 ### **Friction factor**
@@ -29,7 +29,7 @@ python -m problems.LIB_Simulation.All.ff --experiment_name='results/ff' --parame
 ```
 ### Simple
 ```bash
-python -m problems.LIB_Simulation.All_simple.ff --experiment_name='results/ff' --parameters='parameters/LIB_Simulation/All_simple/ff.yml' --algorithm='SGE'
+python -m problems.LIB_Simulation.All_simple.ff --experiment_name='results/ff_simple' --parameters='parameters/LIB_Simulation/All_simple/ff.yml' --algorithm='SGE'
 ```
 
 ### **Nusselt number**

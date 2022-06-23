@@ -6,6 +6,11 @@
 git https://github.com/rafadls/GE_LAB.git
 cd GE_LAB
 ```
+
+## **resources**
+
+You can get the [resources]([myLib/README.md](https://drive.google.com/file/d/1LxKXb73UsiJJiof2Gpx2r2O6wlajICQl/view?usp=sharing)) used in the thesis.
+
 ## **RUN**
 
 ```bash

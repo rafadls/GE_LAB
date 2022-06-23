@@ -14,13 +14,11 @@ class SymbolicRegression():
         self.read_fit_cases()
 
     def read_fit_cases(self):
-        df = pd.read_csv('resources/LIB_Simulation/All/df_ff.txt').sample(5000)
+        df = pd.read_csv('resources/LIB_Real/df_dV_dT_norm.csv')
         self.X_train = df.values[:,:-1]
         self.Y_train = df.values[:,-1]
 
     def get_error(self, individual, dataset):
-        if not 'x[10]' in individual:
-            return self.__invalid_fitness
         try:
             Y_pred = list(map(lambda x: eval(individual), dataset))
             error = mean_squared_error(self.Y_train,Y_pred,squared=False)

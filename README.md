@@ -9,7 +9,7 @@ cd GE_LAB
 
 ## **resources**
 
-You can get the [resources]([myLib/README.md](https://drive.google.com/file/d/1LxKXb73UsiJJiof2Gpx2r2O6wlajICQl/view?usp=sharing)) used in the thesis.
+You can get the [resources]([myLib/README.md](https://drive.google.com/file/d/1LxKXb73UsiJJiof2Gpx2r2O6wlajICQl/view?usp=sharing)) used in the thesis. The file it is .zip format, so you must extract the folder resources/ and place it on the code's path.
 
 ## **RUN**
 

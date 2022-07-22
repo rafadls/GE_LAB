@@ -19,57 +19,50 @@ python -m <problem module> --experiment_name=<name output folder> --parameters=<
 
 ## **Li-Ion Battery: equilibrium**
 ### **Drag coefficient**
-* Normal
+
 ```bash
-python -m problems.LIB_Simulation.All.cdrag --experiment_name='results/cdrag' --parameters='parameters/LIB_Simulation/All/cdrag.yml' --algorithm='SGE'
-```
-* Simple
-```bash
-python -m problems.LIB_Simulation.All_simple.cdrag --experiment_name='results/cdrag_simple' --parameters='parameters/LIB_Simulation/All_simple/cdrag.yml' --algorithm='SGE'
-```
-* Simplest
-```bash
-python -m problems.LIB_Simulation.All_simplest.cdrag --experiment_name='results/cdrag_simplest' --parameters='parameters/LIB_Simulation/All_simplest/cdrag.yml' --algorithm='SGE'
+python -m problems.LIB.CI.cdrag --experiment_name='results/cdrag' --parameters='parameters/LIB/CI/cdrag.yml' --algorithm='SGE'
 ```
 
+
 ### **Friction factor**
-* Normal
+
 ```bash
-python -m problems.LIB_Simulation.All.ff --experiment_name='results/ff' --parameters='parameters/LIB_Simulation/All/ff.yml' --algorithm='SGE'
-```
-* Simple
-```bash
-python -m problems.LIB_Simulation.All_simple.ff --experiment_name='results/ff_simple' --parameters='parameters/LIB_Simulation/All_simple/ff.yml' --algorithm='SGE'
-```
-* Simplest
-```bash
-python -m problems.LIB_Simulation.All_simplest.ff --experiment_name='results/ff_simplest' --parameters='parameters/LIB_Simulation/All_simplest/ff.yml' --algorithm='SGE'
+python -m problems.LIB.CI.ff --experiment_name='results/ff' --parameters='parameters/LIB/CI/ff.yml' --algorithm='SGE'
 ```
 
 ### **Nusselt number**
-* Normal
-```bash
-python -m problems.LIB_Simulation.All.n --experiment_name='results/n' --parameters='parameters/LIB_Simulation/All/n.yml' --algorithm='SGE'
-```
-* Simple
-```bash
-python -m problems.LIB_Simulation.All_simple.n --experiment_name='results/n_simple' --parameters='parameters/LIB_Simulation/All_simple/n.yml' --algorithm='SGE'
-```
-* Simplest
-```bash
-python -m problems.LIB_Simulation.All_simplest.n --experiment_name='results/n_simplest' --parameters='parameters/LIB_Simulation/All_simplest/n.yml' --algorithm='SGE'
-```
-
-## **Li-Ion Battery: Discharge and cooling down**
-
-### **Hcomb**
 
 ```bash
-python -m problems.LIB_Real.Hcomb --experiment_name='results/Hcomb' --parameters='parameters/LIB_Real/Hcomb.yml' --algorithm='SGE'
+python -m problems.LIB.CI.n --experiment_name='results/n' --parameters='parameters/LIB/CI/n.yml' --algorithm='SGE'
 ```
 
-### **dV_dT**
+## **Li-Ion Battery: border condition*
+
+### **V**
 
 ```bash
-python -m problems.LIB_Real.dV_dT --experiment_name='results/dV_dT' --parameters='parameters/LIB_Real/dV_dT.yml' --algorithm='SGE'
+python -m problems.LIB.BC.v --experiment_name='results/v' --parameters='parameters/LIB/BC/v.yml' --algorithm='SGE'
 ```
+
+
+### **T**
+
+```bash
+python -m problems.LIB.BC.t --experiment_name='results/t' --parameters='parameters/LIB/BC/t.yml' --algorithm='SGE'
+```
+
+### **P**
+
+```bash
+python -m problems.LIB.BC.p --experiment_name='results/p' --parameters='parameters/LIB/BC/p.yml' --algorithm='SGE'
+```
+
+## **Li-Ion Battery: Fluid temperature*
+
+### **V**
+
+```bash
+python -m problems.LIB.TF.tf --experiment_name='results/tf' --parameters='parameters/LIB/TF/tf.yml' --algorithm='SGE'
+```
+

@@ -14,7 +14,7 @@ class SymbolicRegression():
         self.read_fit_cases()
 
     def read_fit_cases(self):
-        df = pd.read_csv('resources/LIB_Simulation/BC/V01.txt')
+        df = pd.read_csv('resources/LIB_Simulation/BC/V01.txt',sep=' ')
         self.X_train = df.values[:,:-1]
         self.Y_train = df.values[:,-1]
 

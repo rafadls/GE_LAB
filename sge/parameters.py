@@ -30,12 +30,12 @@ params = {'PARAMETERS': None,
           'PERMUTATION_RAMPS':5,
           'MAX_WRAPS': 0,
           'MIN_INIT_TREE_DEPTH': None,
-          'OPTIMIZE': True,
-          'OPTIMIZE_EACH': 10,
-          'EASY_START': True,
-          'ALL_VALID': True, 
-          'CACHE': True,  
-          'CLEAN_CACHE_EACH': 10,      
+          'OPTIMIZE': False,
+          'OPTIMIZE_EACH': 10000,
+          'EASY_START': False,
+          'ALL_VALID': False, 
+          'CACHE': False,  
+          'CLEAN_CACHE_EACH': 1000000,      
           }
 
 

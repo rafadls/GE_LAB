@@ -35,7 +35,7 @@ python -m problems.LIB_Simulation.All_simplest.cdrag --experiment_name='results/
 ### **Friction factor**
 * Normal
 ```bash
-python -m problems.LIB_Simulation.All.ff --experiment_name='results/ff' --parameters='parameters/LIB_Simulation/All/ff.yml' --algorithm='SGE'
+python -m problems.LIB.CI.ff --experiment_name='results/ff' --parameters='parameters/LIB/CI/ff.yml' --algorithm='SGE'
 ```
 * Simple
 ```bash

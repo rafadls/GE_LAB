@@ -1,3 +1,4 @@
+from ast import Continue
 import random
 import sys
 from token import OP
@@ -46,9 +47,11 @@ def make_initial_population():
         yield generate_random_individual()
 
 def evaluate(ind, eval_func, OPTIMIZE=False):
-    phen, tree_depth, other_info, quality = None, None, None, np.inf
+    #print(ind)
+    phen, tree_depth, other_info, quality, quality_val = None, None, None, np.inf, np.inf
     if pd.isna(ind['fitness']):
         if params['ALGORITHM']=='SGE':
+            #print('mapping')
             mapping_values = [0 for i in ind['genotype']]
             ind['original_phenotype'], tree_depth = grammar_sge.mapping(ind['genotype'], mapping_values)
             ind['mapping_values'] = mapping_values
@@ -56,30 +59,31 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
             ind['original_phenotype'], genome, tree, nodes, invalid, tree_depth, used_codonsmapper = mapper_GE(ind['genotype'])
         elif params['ALGORITHM']=='PGE':
             ind['original_phenotype'], ind['gram_counter'] = mapper_PGE(ind['genotype'])
-        phen = Get_phtnotype_time(ind['original_phenotype'],eval_func, OPTIMIZE)
-        if phen in cache.keys():
-            quality = np.inf
+        if "Constant" in ind['original_phenotype']:
+            phen = Get_phtnotype_time(ind['original_phenotype'],eval_func, OPTIMIZE)
         else:
+            phen = ind['original_phenotype']
+        if (params['CACHE']  and (phen not in cache.keys())) or not params['CACHE']:
+            #print('evaluar')
             try:
-                quality, other_info = eval_func.evaluate(phen)
+                quality, quality_val, other_info = eval_func.evaluate(phen)
             except:
                 pass
-            if pd.isna(quality):
-                quality = np.inf
-            if params['CACHE']:
-                cache[phen] = quality
+        if pd.isna(quality):
+            quality = np.inf
+        if params['CACHE']:
+            cache[phen] = quality
         ind['phenotype'] = phen
         ind['fitness'] = quality
+        ind['fitness val'] = quality_val
         ind['other_info'] = other_info
         ind['tree_depth'] = tree_depth
         ind['optimized'] = OPTIMIZE
     elif (not ind['optimized']) and OPTIMIZE:     
         phen = Get_phtnotype_time(ind['original_phenotype'],eval_func, OPTIMIZE)
-        if phen in cache.keys():
-            quality = np.inf
-        else:
+        if phen not in cache.keys():
             try:
-                quality, other_info = eval_func.evaluate(phen)
+                quality,quality_val, other_info = eval_func.evaluate(phen)
             except:
                 pass
             if quality == None:
@@ -87,6 +91,7 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
             if params['CACHE']:
                 cache[phen] = quality
         ind['phenotype'] = phen
+        ind['fitness val'] = quality_val
         ind['fitness'] = quality
         ind['other_info'] = other_info
         ind['optimized'] = OPTIMIZE
@@ -164,6 +169,7 @@ def setup(parameters_file_path = None):
         grammar_pge.read_grammar()
 
 def evolutionary_algorithm(evaluation_function=None, parameters_file=None):
+    #sys.stdout.write("\r INICIALIZANDO                                             ")
     setup(parameters_file_path=parameters_file)
     population = list(make_initial_population())
     it = 0
@@ -171,16 +177,19 @@ def evolutionary_algorithm(evaluation_function=None, parameters_file=None):
     flag = False
     while it <= params['GENERATIONS']:
         #print('########### Generation ' + str(it) + ' ########')
-        if it%params['CLEAN_CACHE_EACH']==0 and it!=0:
+        #sys.stdout.write("\r Generation " + str(it) + '                                 ') 
+        if params['CACHE'] and it%params['CLEAN_CACHE_EACH']==0 and it!=0:
             cache = {}
         for i in range(len((population))):
+            #sys.stdout.write("\r Generation " + str(it) + ': evaluando individuo ' +  str(i) + '                   ') 
             if params['OPTIMIZE'] and it%params['OPTIMIZE_EACH'] == 0 and it!=0:
                 population[i] = evaluate(population[i], evaluation_function,OPTIMIZE=True)
             else:
                 population[i] = evaluate(population[i], evaluation_function,OPTIMIZE=False)
-            while (pd.isna(population[i]['fitness'])) or population[i]['fitness']>10**6:
-                population[i] = generate_random_individual()
-                population[i] = evaluate(population[i], evaluation_function,OPTIMIZE=False)
+            if params['ALL_VALID']:
+                while (pd.isna(population[i]['fitness'])) or population[i]['fitness']>10**6:
+                    population[i] = generate_random_individual()
+                    population[i] = evaluate(population[i], evaluation_function,OPTIMIZE=False)        
 
         population.sort(key=lambda x: x['fitness'])
 
@@ -196,12 +205,14 @@ def evolutionary_algorithm(evaluation_function=None, parameters_file=None):
         logger.evolution_progress(it, population)
         new_population = population[:params['ELITISM']]
         while len(new_population) < params['POPSIZE']:
+            #sys.stdout.write("\r Generation " + str(it) + ': crossover                     ') 
             if random.random() < params['PROB_CROSSOVER']:
                 p1 = tournament(population, params['TSIZE'])
                 p2 = tournament(population, params['TSIZE'])
                 ni = crossover(p1, p2)
             else:
                 ni = tournament(population, params['TSIZE'])
+            #sys.stdout.write("\r Generation " + str(it) + ': mutation                     ') 
             ni = mutate(ni, params['PROB_MUTATION'])
             new_population.append(ni)
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 97ae1a2a8db90a78d3d93e90229bdbd79d5cec69
 import numpy as np
 
 import pandas as pd
@@ -54,6 +58,11 @@ df_grid_pivot = df_grid.pivot(columnas_valiables[0],columnas_valiables[1], 'mean
 fig, axis = plt.subplots(1,1, figsize=(10,8))
 sns.heatmap(df_grid_pivot,ax=axis)
 plt.title('Error en obtener un expresión para número de Nusselt en función \n del tamaño de población y la cantidad de generaciones',fontsize=16)
+<<<<<<< HEAD
 plt.xlabel('Adaptive increment (proportional)',fontsize=14)
 plt.ylabel('Learning Factor',fontsize=14)
+=======
+plt.xlabel('Tamaño de población',fontsize=14)
+plt.ylabel('Cantidad de generaciones',fontsize=14)
+>>>>>>> 97ae1a2a8db90a78d3d93e90229bdbd79d5cec69
 plt.savefig('graph.png')

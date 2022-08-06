@@ -37,12 +37,15 @@ for index, row in df_grid.iterrows():
     runs = row['runs']
     generations = row['generations']
     popsize = row['popsize']
+    learning_factor = row['learning_factor']
+    adaptive_increment_p = row['adaptive_increment_p']
+    adaptive_increment = adaptive_increment_p*learning_factor
     elitism_p = row['elitism_p']
     elitism = int((elitism_p*popsize)//1)
     prob_crossover = row['prob_crossover']
     prob_mutation = row['prob_mutation']
-    for algorithm in ['SGE']:
-        for i in range(runs):
-            subprocess.check_call(['python','-m', 'problems.GRID.' + problem, '--experiment_name','results/'+ problem + '/' + str(index), '--parameters', 'parameters/GRID/' + parameters, '--algorithm', algorithm, '--run', str(i),'--generations',str(generations),'--popsize',str(popsize),'--elitism',str(elitism),'--prob_crossover',str(prob_crossover),'--prob_mutation',str(prob_mutation)])
+    algorithm = 'PGE'
+    for i in range(runs):
+        subprocess.check_call(['python','-m', 'problems.GRID.' + problem,'--learning_factor',str(learning_factor),'--adaptive_increment',str(adaptive_increment), '--experiment_name','results/'+ problem + '/' + str(index), '--parameters', 'parameters/GRID/' + parameters, '--algorithm', algorithm, '--run', str(i),'--generations',str(generations),'--popsize',str(popsize),'--elitism',str(elitism),'--prob_crossover',str(prob_crossover),'--prob_mutation',str(prob_mutation)])
 
-subprocess.check_call(['python','graph.py'])
+#subprocess.check_call(['python','graph.py'])

@@ -24,7 +24,7 @@ params = {'PARAMETERS': None,
           'SIZE_GENOTYPE': 128,
           'CODON_SIZE': 100000,
           'LEARNING_FACTOR': 0.01,
-          'ADAPTIVE': False,
+          'ADAPTIVE': True,
           'ADAPTIVE_INCREMENT': 0.001,
           'ALGORITHM': 'SGE',
           'PERMUTATION_RAMPS':5,
@@ -112,6 +112,14 @@ def set_parameters(arguments):
     parser.add_argument('--algorithm',
                         dest='ALGORITHM',
                         help='Turns on the verbose output of the program') 
+    parser.add_argument('--learning_factor',
+                        dest='LEARNING_FACTOR',
+                        type=float,
+                        help='') 
+    parser.add_argument('--adaptive_increment',
+                        dest='ADAPTIVE_INCREMENT',
+                        type=float,
+                        help='') 
 
     # Parse command line arguments using all above information.
     args, _ = parser.parse_known_args(arguments)

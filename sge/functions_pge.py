@@ -37,6 +37,3 @@ def update_probs(best, lf):
 
             for i in range(len(l)):
                 grammar.get_dict()[key][i][1] = l[i]
-
-    print("Probabilities updated")
-    print(grammar.get_dict())

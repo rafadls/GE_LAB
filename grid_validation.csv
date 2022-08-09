@@ -1,13 +1,4 @@
 problem,parameters,runs
-cdrag_25,cdrag.yml,1
+n_53,cdrag.yml,1
+ff_53,cdrag.yml,1
 cdrag_53,cdrag.yml,1
-cdrag_74,cdrag.yml,1
-cdrag_102,cdrag.yml,1
-ff_25,ff.yml,1
-ff_53,ff.yml,1
-ff_74,ff.yml,1
-ff_102,ff.yml,1
-n_25,n.yml,1
-n_53,n.yml,1
-n_74,n.yml,1
-n_102,n.yml,1

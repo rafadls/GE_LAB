@@ -1,18 +1,8 @@
-import string
-import numpy as np
-import sge
 import pandas as pd
 import os
-import json
-import itertools
 import shutil
 import subprocess
-import sys
-import argparse
 
-from sge.parameters import params
-
-from sge.engine import setup
 
 def createFolder(folder):
     try:

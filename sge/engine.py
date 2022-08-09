@@ -47,8 +47,8 @@ def make_initial_population():
         yield generate_random_individual()
 
 def evaluate(ind, eval_func, OPTIMIZE=False):
-    #print(ind)
-    phen, tree_depth, other_info, quality, quality_val = None, None, None, np.inf, np.inf
+    inf_info = list(ind.keys())
+    phen, tree_depth, other_info, quality, quality_val,opt_const = None, None, None, np.inf, np.inf, []
     if pd.isna(ind['fitness']):
         if params['ALGORITHM']=='SGE':
             #print('mapping')
@@ -60,11 +60,10 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
         elif params['ALGORITHM']=='PGE':
             ind['original_phenotype'], ind['gram_counter'] = mapper_PGE(ind['genotype'])
         if "Constant" in ind['original_phenotype']:
-            phen = Get_phtnotype_time(ind['original_phenotype'],eval_func, OPTIMIZE)
+            phen,opt_const = Get_phtnotype_time(ind['original_phenotype'],[],eval_func, OPTIMIZE)
         else:
             phen = ind['original_phenotype']
         if (params['CACHE']  and (phen not in cache.keys())) or not params['CACHE']:
-            #print('evaluar')
             try:
                 quality, quality_val, other_info = eval_func.evaluate(phen)
             except:
@@ -74,13 +73,17 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
         if params['CACHE']:
             cache[phen] = quality
         ind['phenotype'] = phen
+        ind['opt_const'] = opt_const
         ind['fitness'] = quality
         ind['fitness val'] = quality_val
         ind['other_info'] = other_info
         ind['tree_depth'] = tree_depth
         ind['optimized'] = OPTIMIZE
-    elif (not ind['optimized']) and OPTIMIZE:     
-        phen = Get_phtnotype_time(ind['original_phenotype'],eval_func, OPTIMIZE)
+    elif (not ind['optimized']) and OPTIMIZE and ("Constant" in ind['original_phenotype']):    
+        if 'opt_const' in inf_info: 
+            phen,opt_const = Get_phtnotype_time(ind['original_phenotype'],ind['opt_const'],eval_func, OPTIMIZE)
+        else:
+            phen,opt_const = Get_phtnotype_time(ind['original_phenotype'],[],eval_func, OPTIMIZE)
         if phen not in cache.keys():
             try:
                 quality,quality_val, other_info = eval_func.evaluate(phen)
@@ -90,6 +93,7 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
                 quality = np.inf
             if params['CACHE']:
                 cache[phen] = quality
+        ind['opt_const'] = opt_const
         ind['phenotype'] = phen
         ind['fitness val'] = quality_val
         ind['fitness'] = quality
@@ -97,13 +101,13 @@ def evaluate(ind, eval_func, OPTIMIZE=False):
         ind['optimized'] = OPTIMIZE
     return ind
 
-def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
-    def f(phenotype, fitness_function, OPTIMIZE, queue):
-        res = Get_phenotype(phenotype, fitness_function, OPTIMIZE)
+def Get_phtnotype_time(phenotype, old_constants, fitness_function, OPTIMIZE):
+    def f(phenotype, old_constants, fitness_function, OPTIMIZE, queue):
+        res = Get_phenotype(phenotype, old_constants, fitness_function, OPTIMIZE)
         queue.put(res)
 
     q = Queue()
-    p = Process(target=f, args=(phenotype, fitness_function, OPTIMIZE, q))
+    p = Process(target=f, args=(phenotype, old_constants, fitness_function, OPTIMIZE, q))
     max_time = 30
     t0 = time.time()
 
@@ -116,12 +120,12 @@ def Get_phtnotype_time(phenotype, fitness_function, OPTIMIZE):
     if p.is_alive():
         #process didn't finish in time so we terminate it
         p.terminate()
-        result = Get_phenotype(phenotype, fitness_function, False)
+        replace_phenotype, opt_const = Get_phenotype(phenotype, old_constants, fitness_function, False)
     else:
-        result = q.get()
-    return result
+        replace_phenotype, opt_const = q.get()
+    return replace_phenotype, opt_const
 
-def Get_phenotype(phenotype, fitness_function, OPTIMIZE):
+def Get_phenotype(phenotype, old_constants, fitness_function, OPTIMIZE):
     p = r"Constant"
     n_constants = len(re.findall(p, phenotype))
 
@@ -136,18 +140,20 @@ def Get_phenotype(phenotype, fitness_function, OPTIMIZE):
         return fitness_function.evaluate(aux)[0]
 
     if n_constants>0:
+        if len(old_constants)==0:
+            old_constants = np.random.rand(n_constants)
         if OPTIMIZE:
             try:
                 fun = lambda x: eval_ind(x)
-                res = minimize(fun, np.ones(n_constants), method='SLSQP',jac=False)
+                res = minimize(fun, old_constants, method='SLSQP',jac=False)
                 opt_const = res['x']
             except:
-                opt_const = np.random.rand(n_constants)
+                opt_const = old_constants
         else:
-            opt_const = np.random.rand(n_constants)
+            opt_const = old_constants
         for index in range(n_constants):
             replace_phenotype = replace_phenotype.replace('c[' + str(index) + ']', str(opt_const[index]))
-    return replace_phenotype
+    return replace_phenotype, opt_const
 
 def setup(parameters_file_path = None):
     if parameters_file_path is not None:
